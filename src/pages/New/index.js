@@ -3,6 +3,8 @@ import { Keyboard, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, 
 
 import Header from '../../components/Header'
 
+import RegisterTypes from "../../components/RegisterTypes";
+
 export default function New(){
     const [labelInput, setLabelInput] = useState('')
     const [valeuInput, setValueInput] = useState('')
@@ -13,7 +15,7 @@ export default function New(){
                 <Header title={'Registrando'}/>
 
                 <SafeAreaView style={{ alignItems:'center', marginTop: 14}}>
-                    
+
                     <TextInput
                     style={styles.input}
                     placeholder="Descrição desse registro"
@@ -27,6 +29,8 @@ export default function New(){
                     value={valeuInput}
                     onChangeText={(text) => setValueInput(text)}
                     />
+
+                    <RegisterTypes type={type} sendTypeChanged={(item) => setType(item)} />
                     
                     <TouchableOpacity style={styles.submitButton}>
                         <Text style={styles.textButton}>Registrar</Text>
