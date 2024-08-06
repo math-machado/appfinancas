@@ -30,7 +30,7 @@ export default function AuthProvider({ children }){
             })
 
             api.defaults.headers['Authorization'] = `Bearer ${storageUser}`
-            setUser(response.data)
+            setUser(response.data);
             setLoading(false)
             }
 
