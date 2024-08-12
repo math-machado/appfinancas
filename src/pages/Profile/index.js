@@ -19,7 +19,11 @@ export default function Profile(){
 
         <Text style={styles.message}> Bem vindo de volta!!</Text>
 
-        <Text style={styles.name}> {user.name} </Text>
+        <Text 
+        style={styles.name}
+        numberOfLines={1}> 
+            {user.name} 
+        </Text>
 
         <TouchableOpacity 
         style={styles.newlink}
