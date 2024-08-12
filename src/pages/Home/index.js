@@ -13,13 +13,17 @@ import { useIsFocused } from '@react-navigation/native'
 
 import BalanceItem from '../../components/BalanceItem'
 
+import Icon from 'react-native-vector-icons/MaterialIcons'
+
+import HistoricoList from '../../components/HistoricoList'
+
 export default function Home(){
     const isFocused = useIsFocused();
 
     const {signOut, user} = useContext(AuthContext)
 
     const [listBalance, setListBalance] = useState([])
-
+    const [movements, setMovements] = useState([])
     const [dateMovements, setDateMovements] = useState(new Date())
 
     useEffect(() => {
@@ -28,6 +32,12 @@ export default function Home(){
         async function getMovements(params){
             let dateFormated = format(dateMovements, 'dd/MM/yyyy')
 
+            const receives = await api.get('/receives',{
+                params:{
+                    date: dateFormated
+                }
+            })
+
             const balance = await api.get('/balance', {
                 params:{
                     date: dateFormated
@@ -35,6 +45,7 @@ export default function Home(){
             })
 
             if(isActive){
+                setMovements(receives.data)
                 setListBalance(balance.data)
             }
         }
@@ -42,7 +53,23 @@ export default function Home(){
         getMovements();
 
         return () => isActive = false
-    },[isFocused])
+    },[isFocused, dateMovements])
+
+    async function handleDelete(id){
+        try {
+            await api.delete ('/receives/delete', {
+            params:{
+                item_id: id
+            }
+        })
+            setDateMovements(new Date())
+        } catch (err) {
+            console.log('ERRO AO DELETAR:', err);
+            
+        }
+        
+    }
+
     return(
         <SafeAreaView style={styles.background}>
             <Header title='Minhas movimentações'/>
@@ -54,6 +81,22 @@ export default function Home(){
                 keyExtractor={ item => item.tag }
                 renderItem={ ({ item }) => (<BalanceItem data={item}/>)}
             />
+
+            <View style={styles.area}>
+                <TouchableOpacity>
+                    <Icon name='event' color="#121212" size={30}/>
+                </TouchableOpacity>
+
+                <Text style={styles.title}>Ultima movimentações</Text>
+            </View>
+
+            <FlatList
+                data={movements}
+                keyExtractor={(item) => item.id}
+                renderItem={({item}) => (<HistoricoList data={item} deleteItem={handleDelete}/>)}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{paddingBottom: 20}}
+            />
         </SafeAreaView>
     )
 }
@@ -64,7 +107,27 @@ const styles = StyleSheet.create({
         backgroundColor:'#f0f4ff'
     },
     listBalance:{
-        maxHeight:190,
-
+        maxHeight:190
+    },
+    area:{
+        backgroundColor:"#fff",
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
+        flexDirection:'row',
+        paddingHorizontal: 14,
+        alignItems:'baseline',
+        marginTop: 24,
+        paddingTop: 14
+    },
+    title:{
+        marginLeft: 5,
+        color:'#121212',
+        marginBottom: 14,
+        fontWeight:'bold',
+        fontSize:18
+    },
+    list:{
+        flex:1,
+        backgroundColor:'#fff'
     }
 })

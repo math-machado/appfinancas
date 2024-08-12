@@ -1,14 +1,60 @@
 import React, { useState } from "react";
-import { Keyboard, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import {Keyboard, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
+
+import { Alert } from "react-native";
 
 import Header from '../../components/Header'
 
 import RegisterTypes from "../../components/RegisterTypes";
 
+import api from "../../services/api";
+
+import { format } from 'date-fns'
+
 export default function New(){
     const [labelInput, setLabelInput] = useState('')
     const [valeuInput, setValueInput] = useState('')
     const [type, setType] = useState('receita')
+
+    function handleSubmit(){
+        Keyboard.dismiss();
+
+        if(isNaN(parseFloat(valeuInput)) || type === null){
+            alert('Preencha todos os campos')
+            return;
+        }
+
+        Alert.alert(
+            'Confirmando dados',
+            `Tipo: ${type}
+
+Valor: R$${parseFloat(valeuInput)}`,
+            [
+                {
+                    text:'Cancelar',
+                    style: 'cancel'
+                },
+                {
+                    text:'Confirmar',
+                    onPress:() => handleAdd()
+                }
+            ]
+        )
+    }
+
+    async function handleAdd(params) {
+        Keyboard.dismiss();
+
+        await api.post('/receive',{
+            description: labelInput,
+            value: Number(valeuInput),
+            type: type,
+            date: format(new Date(), 'dd/MM/yyyy')
+        })
+
+        setLabelInput('');
+        setValueInput('');
+    }
     return(
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <View style={styles.background}>
@@ -32,7 +78,9 @@ export default function New(){
 
                     <RegisterTypes type={type} sendTypeChanged={(item) => setType(item)} />
                     
-                    <TouchableOpacity style={styles.submitButton}>
+                    <TouchableOpacity 
+                    style={styles.submitButton}
+                    onPress={() => handleSubmit()}>
                         <Text style={styles.textButton}>Registrar</Text>
                     </TouchableOpacity>
                 </SafeAreaView>

@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'flex-start',
         width:300,
-        paddingLeft:14
+        paddingLeft:14,
     },
     label:{
         color:'#fff',
