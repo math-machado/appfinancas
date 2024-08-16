@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import {FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {FlatList, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 import { AuthContext } from '../../contexts/auth'
 
@@ -17,6 +17,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import HistoricoList from '../../components/HistoricoList'
 
+import CalendarModal from '../../components/CalendarModal'
+
+
 export default function Home(){
     const isFocused = useIsFocused();
 
@@ -25,6 +28,7 @@ export default function Home(){
     const [listBalance, setListBalance] = useState([])
     const [movements, setMovements] = useState([])
     const [dateMovements, setDateMovements] = useState(new Date())
+    const [modalVisable, setModalVisable] = useState(false)
 
     useEffect(() => {
         let isActive = true;
@@ -70,6 +74,10 @@ export default function Home(){
         
     }
 
+    function filterDateMovements(dateSelected){
+        setDateMovements(dateSelected)
+    }
+
     return(
         <SafeAreaView style={styles.background}>
             <Header title='Minhas movimentações'/>
@@ -83,11 +91,12 @@ export default function Home(){
             />
 
             <View style={styles.area}>
-                <TouchableOpacity>
+                <TouchableOpacity
+                onPress={() => setModalVisable(true)}>
                     <Icon name='event' color="#121212" size={30}/>
                 </TouchableOpacity>
 
-                <Text style={styles.title}>Ultima movimentações</Text>
+                <Text style={styles.title}>Ultimas movimentações</Text>
             </View>
 
             <FlatList
@@ -97,6 +106,13 @@ export default function Home(){
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{paddingBottom: 20}}
             />
+
+            <Modal visible={modalVisable} animationType='fade' transparent={true}>
+                <CalendarModal
+                setVisable={() => setModalVisable(false)}
+                handleFilter={filterDateMovements}
+                />
+            </Modal>
         </SafeAreaView>
     )
 }
@@ -107,7 +123,8 @@ const styles = StyleSheet.create({
         backgroundColor:'#f0f4ff'
     },
     listBalance:{
-        maxHeight:190
+        maxHeight:190,
+        minHeight:190
     },
     area:{
         backgroundColor:"#fff",
@@ -116,7 +133,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         paddingHorizontal: 14,
         alignItems:'baseline',
-        marginTop: 24,
+        marginTop: 0,
         paddingTop: 14
     },
     title:{
